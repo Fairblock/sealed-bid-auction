@@ -1,0 +1,12 @@
+syntax = "proto3";
+package auction.auction;
+
+import "gogoproto/gogo.proto";
+import "auction/auction/params.proto";
+
+option go_package = "auction/x/auction/types";
+
+// GenesisState defines the auction module's genesis state.
+message GenesisState {
+  Params params = 1 [(gogoproto.nullable) = false];
+}

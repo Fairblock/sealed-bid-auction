@@ -1,0 +1,12 @@
+syntax = "proto3";
+package auction.auction;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "auction/x/auction/types";
+
+// Params defines the parameters for the module.
+message Params {
+  option (gogoproto.goproto_stringer) = false;
+  
+}
