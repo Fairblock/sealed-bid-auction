@@ -8,6 +8,7 @@ import "cosmos/base/query/v1beta1/pagination.proto";
 import "auction/auction/params.proto";
 import "auction/auction/auction.proto";
 import "auction/auction/bid.proto";
+import "auction/auction/finalized_auction.proto";
 
 option go_package = "auction/x/auction/types";
 
@@ -37,6 +38,16 @@ service Query {
   }
   rpc BidAll (QueryAllBidRequest) returns (QueryAllBidResponse) {
     option (google.api.http).get = "/auction/auction/bid";
+  
+  }
+  
+  // Queries a list of FinalizedAuction items.
+  rpc FinalizedAuction    (QueryGetFinalizedAuctionRequest) returns (QueryGetFinalizedAuctionResponse) {
+    option (google.api.http).get = "/auction/auction/finalized_auction/{id}";
+  
+  }
+  rpc FinalizedAuctionAll (QueryAllFinalizedAuctionRequest) returns (QueryAllFinalizedAuctionResponse) {
+    option (google.api.http).get = "/auction/auction/finalized_auction";
   
   }
 }
@@ -82,5 +93,22 @@ message QueryAllBidRequest {
 message QueryAllBidResponse {
   repeated Bid                                    Bid        = 1 [(gogoproto.nullable) = false];
            cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetFinalizedAuctionRequest {
+  uint64 id = 1;
+}
+
+message QueryGetFinalizedAuctionResponse {
+  FinalizedAuction FinalizedAuction = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllFinalizedAuctionRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllFinalizedAuctionResponse {
+  repeated FinalizedAuction                       FinalizedAuction = 1 [(gogoproto.nullable) = false];
+           cosmos.base.query.v1beta1.PageResponse pagination       = 2;
 }
 

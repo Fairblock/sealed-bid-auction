@@ -32,6 +32,15 @@ func TestGenesis(t *testing.T) {
 			},
 		},
 		BidCount: 2,
+		FinalizedAuctionList: []types.FinalizedAuction{
+			{
+				Id: 0,
+			},
+			{
+				Id: 1,
+			},
+		},
+		FinalizedAuctionCount: 2,
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
@@ -47,5 +56,7 @@ func TestGenesis(t *testing.T) {
 	require.Equal(t, genesisState.AuctionCount, got.AuctionCount)
 	require.ElementsMatch(t, genesisState.BidList, got.BidList)
 	require.Equal(t, genesisState.BidCount, got.BidCount)
+	require.ElementsMatch(t, genesisState.FinalizedAuctionList, got.FinalizedAuctionList)
+	require.Equal(t, genesisState.FinalizedAuctionCount, got.FinalizedAuctionCount)
 	// this line is used by starport scaffolding # genesis/test/assert
 }

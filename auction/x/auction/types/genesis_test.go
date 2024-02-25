@@ -40,6 +40,15 @@ func TestGenesisState_Validate(t *testing.T) {
 					},
 				},
 				BidCount: 2,
+				FinalizedAuctionList: []types.FinalizedAuction{
+					{
+						Id: 0,
+					},
+					{
+						Id: 1,
+					},
+				},
+				FinalizedAuctionCount: 2,
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,
@@ -93,6 +102,32 @@ func TestGenesisState_Validate(t *testing.T) {
 					},
 				},
 				BidCount: 0,
+			},
+			valid: false,
+		},
+		{
+			desc: "duplicated finalizedAuction",
+			genState: &types.GenesisState{
+				FinalizedAuctionList: []types.FinalizedAuction{
+					{
+						Id: 0,
+					},
+					{
+						Id: 0,
+					},
+				},
+			},
+			valid: false,
+		},
+		{
+			desc: "invalid finalizedAuction count",
+			genState: &types.GenesisState{
+				FinalizedAuctionList: []types.FinalizedAuction{
+					{
+						Id: 1,
+					},
+				},
+				FinalizedAuctionCount: 0,
 			},
 			valid: false,
 		},

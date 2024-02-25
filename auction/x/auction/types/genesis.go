@@ -10,8 +10,9 @@ const DefaultIndex uint64 = 1
 // DefaultGenesis returns the default genesis state
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
-		AuctionList: []Auction{},
-		BidList:     []Bid{},
+		AuctionList:          []Auction{},
+		BidList:              []Bid{},
+		FinalizedAuctionList: []FinalizedAuction{},
 		// this line is used by starport scaffolding # genesis/types/default
 		Params: DefaultParams(),
 	}
@@ -43,6 +44,18 @@ func (gs GenesisState) Validate() error {
 			return fmt.Errorf("bid id should be lower or equal than the last id")
 		}
 		bidIdMap[elem.Id] = true
+	}
+	// Check for duplicated ID in finalizedAuction
+	finalizedAuctionIdMap := make(map[uint64]bool)
+	finalizedAuctionCount := gs.GetFinalizedAuctionCount()
+	for _, elem := range gs.FinalizedAuctionList {
+		if _, ok := finalizedAuctionIdMap[elem.Id]; ok {
+			return fmt.Errorf("duplicated id for finalizedAuction")
+		}
+		if elem.Id >= finalizedAuctionCount {
+			return fmt.Errorf("finalizedAuction id should be lower or equal than the last id")
+		}
+		finalizedAuctionIdMap[elem.Id] = true
 	}
 	// this line is used by starport scaffolding # genesis/types/validate
 

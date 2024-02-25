@@ -533,6 +533,7 @@ func New(
 		keys[auctionmoduletypes.StoreKey],
 		keys[auctionmoduletypes.MemStoreKey],
 		app.GetSubspace(auctionmoduletypes.ModuleName),
+		app.BankKeeper,
 	)
 	auctionModule := auctionmodule.NewAppModule(appCodec, app.AuctionKeeper, app.AccountKeeper, app.BankKeeper)
 

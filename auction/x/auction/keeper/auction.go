@@ -23,6 +23,52 @@ func (k Keeper) GetAuctionCount(ctx sdk.Context) uint64 {
 	return binary.BigEndian.Uint64(bz)
 }
 
+// UpdateAuctionHighestBidId set the highest bid id of auction
+func (k Keeper) UpdateAuctionHighestBidId(ctx sdk.Context, id uint64, bidId uint64) error {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AuctionKey))
+
+	bz := make([]byte, 8)
+	binary.BigEndian.PutUint64(bz, id)
+
+	b := store.Get(bz)
+	if b == nil {
+		return types.AuctionNotFound
+	}
+
+	var auction types.Auction
+	k.cdc.MustUnmarshal(b, &auction)
+
+	auction.HighestBidExists = true
+	auction.CurrentHighestBidId = bidId
+
+	appendedValue := k.cdc.MustMarshal(&auction)
+
+	store.Set(bz, appendedValue)
+	return nil
+}
+
+// EndAuction set the auction status to ended
+func (k Keeper) EndAuction(ctx sdk.Context, id uint64) error {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AuctionKey))
+
+	bz := make([]byte, 8)
+	binary.BigEndian.PutUint64(bz, id)
+
+	b := store.Get(bz)
+	if b == nil {
+		return types.AuctionNotFound
+	}
+
+	var auction types.Auction
+	k.cdc.MustUnmarshal(b, &auction)
+	auction.Ended = true
+
+	appendedValue := k.cdc.MustMarshal(&auction)
+
+	store.Set(bz, appendedValue)
+	return nil
+}
+
 // SetAuctionCount set the total number of auction
 func (k Keeper) SetAuctionCount(ctx sdk.Context, count uint64) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte{})

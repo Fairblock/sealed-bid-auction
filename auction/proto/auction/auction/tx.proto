@@ -12,11 +12,7 @@ option go_package = "auction/x/auction/types";
 // Msg defines the Msg service.
 service Msg {
   rpc CreateAuction   (MsgCreateAuction  ) returns (MsgCreateAuctionResponse  );
-  rpc UpdateAuction   (MsgUpdateAuction  ) returns (MsgUpdateAuctionResponse  );
-  rpc DeleteAuction   (MsgDeleteAuction  ) returns (MsgDeleteAuctionResponse  );
   rpc CreateBid       (MsgCreateBid      ) returns (MsgCreateBidResponse      );
-  rpc UpdateBid       (MsgUpdateBid      ) returns (MsgUpdateBidResponse      );
-  rpc DeleteBid       (MsgDeleteBid      ) returns (MsgDeleteBidResponse      );
   rpc FinalizeAuction (MsgFinalizeAuction) returns (MsgFinalizeAuctionResponse);
 }
 message MsgCreateAuction {
@@ -34,27 +30,6 @@ message MsgCreateAuctionResponse {
   uint64 id = 1;
 }
 
-message MsgUpdateAuction {
-  string                   creator             = 1;
-  uint64                   id                  = 2;
-  string                   name                = 3;
-  cosmos.base.v1beta1.Coin startPrice          = 4 [(gogoproto.nullable) = false];
-  uint64                   duration            = 5;
-  uint64                   createdAt           = 6;
-  uint64                   currentHighestBidId = 7;
-  bool                     highestBidExists    = 8;
-  bool                     ended               = 9;
-}
-
-message MsgUpdateAuctionResponse {}
-
-message MsgDeleteAuction {
-  string creator = 1;
-  uint64 id      = 2;
-}
-
-message MsgDeleteAuctionResponse {}
-
 message MsgCreateBid {
   string                   creator   = 1;
   uint64                   auctionId = 2;
@@ -65,26 +40,14 @@ message MsgCreateBidResponse {
   uint64 id = 1;
 }
 
-message MsgUpdateBid {
-  string                   creator   = 1;
-  uint64                   id        = 2;
-  uint64                   auctionId = 3;
-  cosmos.base.v1beta1.Coin bidPrice  = 4 [(gogoproto.nullable) = false];
-}
-
-message MsgUpdateBidResponse {}
-
-message MsgDeleteBid {
-  string creator = 1;
-  uint64 id      = 2;
-}
-
-message MsgDeleteBidResponse {}
-
 message MsgFinalizeAuction {
   string creator   = 1;
   uint64 auctionId = 2;
 }
 
-message MsgFinalizeAuctionResponse {}
+message MsgFinalizeAuctionResponse {
+  uint64 id = 1;
+  cosmos.base.v1beta1.Coin finalPrice = 2 [(gogoproto.nullable) = false];
+  string bidder = 3;
+}
 

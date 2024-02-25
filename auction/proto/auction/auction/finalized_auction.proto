@@ -1,0 +1,15 @@
+syntax = "proto3";
+package auction.auction;
+
+option go_package = "auction/x/auction/types";
+import "gogoproto/gogo.proto"; 
+import "cosmos/base/v1beta1/coin.proto"; 
+
+message FinalizedAuction {
+  uint64 id = 1;
+  uint64 auctionId = 2; 
+  uint64 bidId = 3; 
+  cosmos.base.v1beta1.Coin finalPrice = 4 [(gogoproto.nullable) = false]; 
+  string bidder = 5;
+  string creator = 6;
+}
