@@ -49,7 +49,15 @@ git checkout tags/v0.27.2
 make install
 ```
 
+The following binaries are for testing the seal bid auction chain:
+
 7. Install [Hermes relayer](https://github.com/informalsystems/hermes) by following the [official guide](https://hermes.informal.systems/quick-start/pre-requisites.html)
+
+8. Install [fairyring binary](https://github.com/Fairblock/fairyring) by following [this guide](https://docs.fairblock.network/docs/running-a-node/installation)
+
+9. Install [encrypter](https://github.com/Fairblock/encrypter) by following [this guide](https://docs.fairblock.network/docs/advanced/encrypt_tx#install-encrypter)
+
+10. Install [ShareGenerator](https://github.com/Fairblock/ShareGenerator) by following [this guide](https://docs.fairblock.network/docs/advanced/share_generator) 
 
 ## Scaffold the seal bid auction chain
 
