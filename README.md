@@ -59,6 +59,9 @@ The following binaries are for testing the seal bid auction chain:
 
 10. Install [ShareGenerator](https://github.com/Fairblock/ShareGenerator) by following [this guide](https://docs.fairblock.network/docs/advanced/share_generator) 
 
+11. Install [Fairyport](https://github.com/Fairblock/fairyport) by following [this guide](https://docs.fairblock.network/docs/advanced/fairyport)
+
+
 ## Scaffold the seal bid auction chain
 
 ### 1. Scaffold the chain with Ignite CLI
