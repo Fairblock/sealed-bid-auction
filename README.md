@@ -49,6 +49,8 @@ git checkout tags/v0.27.2
 make install
 ```
 
+7. Install [Hermes relayer](https://github.com/informalsystems/hermes) by following the [official guide](https://hermes.informal.systems/quick-start/pre-requisites.html)
+
 ## Scaffold the seal bid auction chain
 
 ### 1. Scaffold the chain with Ignite CLI
