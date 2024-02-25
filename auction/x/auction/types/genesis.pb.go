@@ -25,7 +25,11 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // GenesisState defines the auction module's genesis state.
 type GenesisState struct {
-	Params Params `protobuf:"bytes,1,opt,name=params,proto3" json:"params"`
+	Params       Params    `protobuf:"bytes,1,opt,name=params,proto3" json:"params"`
+	AuctionList  []Auction `protobuf:"bytes,2,rep,name=auctionList,proto3" json:"auctionList"`
+	AuctionCount uint64    `protobuf:"varint,3,opt,name=auctionCount,proto3" json:"auctionCount,omitempty"`
+	BidList      []Bid     `protobuf:"bytes,4,rep,name=bidList,proto3" json:"bidList"`
+	BidCount     uint64    `protobuf:"varint,5,opt,name=bidCount,proto3" json:"bidCount,omitempty"`
 }
 
 func (m *GenesisState) Reset()         { *m = GenesisState{} }
@@ -68,6 +72,34 @@ func (m *GenesisState) GetParams() Params {
 	return Params{}
 }
 
+func (m *GenesisState) GetAuctionList() []Auction {
+	if m != nil {
+		return m.AuctionList
+	}
+	return nil
+}
+
+func (m *GenesisState) GetAuctionCount() uint64 {
+	if m != nil {
+		return m.AuctionCount
+	}
+	return 0
+}
+
+func (m *GenesisState) GetBidList() []Bid {
+	if m != nil {
+		return m.BidList
+	}
+	return nil
+}
+
+func (m *GenesisState) GetBidCount() uint64 {
+	if m != nil {
+		return m.BidCount
+	}
+	return 0
+}
+
 func init() {
 	proto.RegisterType((*GenesisState)(nil), "auction.auction.GenesisState")
 }
@@ -75,18 +107,24 @@ func init() {
 func init() { proto.RegisterFile("auction/auction/genesis.proto", fileDescriptor_21c67da9e6fdeb9d) }
 
 var fileDescriptor_21c67da9e6fdeb9d = []byte{
-	// 167 bytes of a gzipped FileDescriptorProto
+	// 267 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x92, 0x4d, 0x2c, 0x4d, 0x2e,
 	0xc9, 0xcc, 0xcf, 0xd3, 0x87, 0xd1, 0xe9, 0xa9, 0x79, 0xa9, 0xc5, 0x99, 0xc5, 0x7a, 0x05, 0x45,
 	0xf9, 0x25, 0xf9, 0x42, 0xfc, 0x50, 0x61, 0x3d, 0x28, 0x2d, 0x25, 0x92, 0x9e, 0x9f, 0x9e, 0x0f,
 	0x96, 0xd3, 0x07, 0xb1, 0x20, 0xca, 0xa4, 0x64, 0xd0, 0x4d, 0x29, 0x48, 0x2c, 0x4a, 0xcc, 0x85,
-	0x1a, 0xa2, 0xe4, 0xca, 0xc5, 0xe3, 0x0e, 0x31, 0x35, 0xb8, 0x24, 0xb1, 0x24, 0x55, 0xc8, 0x94,
-	0x8b, 0x0d, 0x22, 0x2f, 0xc1, 0xa8, 0xc0, 0xa8, 0xc1, 0x6d, 0x24, 0xae, 0x87, 0x66, 0x8b, 0x5e,
-	0x00, 0x58, 0xda, 0x89, 0xe5, 0xc4, 0x3d, 0x79, 0x86, 0x20, 0xa8, 0x62, 0x27, 0xc3, 0x13, 0x8f,
-	0xe4, 0x18, 0x2f, 0x3c, 0x92, 0x63, 0x7c, 0xf0, 0x48, 0x8e, 0x71, 0xc2, 0x63, 0x39, 0x86, 0x0b,
-	0x8f, 0xe5, 0x18, 0x6e, 0x3c, 0x96, 0x63, 0x88, 0x12, 0x87, 0x59, 0x5b, 0x01, 0x77, 0x40, 0x49,
-	0x65, 0x41, 0x6a, 0x71, 0x12, 0x1b, 0xd8, 0x01, 0xc6, 0x80, 0x00, 0x00, 0x00, 0xff, 0xff, 0x29,
-	0x02, 0x7d, 0x82, 0xe6, 0x00, 0x00, 0x00,
+	0x1a, 0x22, 0x85, 0x61, 0x07, 0xcc, 0x50, 0x88, 0xb4, 0x24, 0xba, 0x74, 0x52, 0x66, 0x0a, 0x44,
+	0x4a, 0xe9, 0x2f, 0x23, 0x17, 0x8f, 0x3b, 0xc4, 0x41, 0xc1, 0x25, 0x89, 0x25, 0xa9, 0x42, 0xa6,
+	0x5c, 0x6c, 0x10, 0xa3, 0x25, 0x18, 0x15, 0x18, 0x35, 0xb8, 0x8d, 0xc4, 0xf5, 0xd0, 0x1c, 0xa8,
+	0x17, 0x00, 0x96, 0x76, 0x62, 0x39, 0x71, 0x4f, 0x9e, 0x21, 0x08, 0xaa, 0x58, 0xc8, 0x81, 0x8b,
+	0x1b, 0x2a, 0xef, 0x93, 0x59, 0x5c, 0x22, 0xc1, 0xa4, 0xc0, 0xac, 0xc1, 0x6d, 0x24, 0x81, 0xa1,
+	0xd7, 0x11, 0x42, 0x43, 0x35, 0x23, 0x6b, 0x11, 0x52, 0xe2, 0xe2, 0x81, 0x72, 0x9d, 0xf3, 0x4b,
+	0xf3, 0x4a, 0x24, 0x98, 0x15, 0x18, 0x35, 0x58, 0x82, 0x50, 0xc4, 0x84, 0x4c, 0xb8, 0xd8, 0x93,
+	0x32, 0x53, 0xc0, 0x36, 0xb0, 0x80, 0x6d, 0x10, 0xc1, 0xb0, 0xc1, 0x29, 0x33, 0x05, 0x6a, 0x3a,
+	0x4c, 0xa9, 0x90, 0x14, 0x17, 0x47, 0x52, 0x66, 0x0a, 0xc4, 0x54, 0x56, 0xb0, 0xa9, 0x70, 0xbe,
+	0x93, 0xe1, 0x89, 0x47, 0x72, 0x8c, 0x17, 0x1e, 0xc9, 0x31, 0x3e, 0x78, 0x24, 0xc7, 0x38, 0xe1,
+	0xb1, 0x1c, 0xc3, 0x85, 0xc7, 0x72, 0x0c, 0x37, 0x1e, 0xcb, 0x31, 0x44, 0x89, 0xc3, 0x02, 0xab,
+	0x02, 0x1e, 0x6c, 0x25, 0x95, 0x05, 0xa9, 0xc5, 0x49, 0x6c, 0xe0, 0x90, 0x33, 0x06, 0x04, 0x00,
+	0x00, 0xff, 0xff, 0x99, 0x01, 0x1b, 0x6a, 0xd9, 0x01, 0x00, 0x00,
 }
 
 func (m *GenesisState) Marshal() (dAtA []byte, err error) {
@@ -109,6 +147,44 @@ func (m *GenesisState) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if m.BidCount != 0 {
+		i = encodeVarintGenesis(dAtA, i, uint64(m.BidCount))
+		i--
+		dAtA[i] = 0x28
+	}
+	if len(m.BidList) > 0 {
+		for iNdEx := len(m.BidList) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.BidList[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x22
+		}
+	}
+	if m.AuctionCount != 0 {
+		i = encodeVarintGenesis(dAtA, i, uint64(m.AuctionCount))
+		i--
+		dAtA[i] = 0x18
+	}
+	if len(m.AuctionList) > 0 {
+		for iNdEx := len(m.AuctionList) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.AuctionList[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x12
+		}
+	}
 	{
 		size, err := m.Params.MarshalToSizedBuffer(dAtA[:i])
 		if err != nil {
@@ -141,6 +217,24 @@ func (m *GenesisState) Size() (n int) {
 	_ = l
 	l = m.Params.Size()
 	n += 1 + l + sovGenesis(uint64(l))
+	if len(m.AuctionList) > 0 {
+		for _, e := range m.AuctionList {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if m.AuctionCount != 0 {
+		n += 1 + sovGenesis(uint64(m.AuctionCount))
+	}
+	if len(m.BidList) > 0 {
+		for _, e := range m.BidList {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if m.BidCount != 0 {
+		n += 1 + sovGenesis(uint64(m.BidCount))
+	}
 	return n
 }
 
@@ -212,6 +306,112 @@ func (m *GenesisState) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AuctionList", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.AuctionList = append(m.AuctionList, Auction{})
+			if err := m.AuctionList[len(m.AuctionList)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AuctionCount", wireType)
+			}
+			m.AuctionCount = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.AuctionCount |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BidList", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.BidList = append(m.BidList, Bid{})
+			if err := m.BidList[len(m.BidList)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 5:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BidCount", wireType)
+			}
+			m.BidCount = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.BidCount |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipGenesis(dAtA[iNdEx:])

@@ -19,12 +19,82 @@ func TestGenesisState_Validate(t *testing.T) {
 			valid:    true,
 		},
 		{
-			desc:     "valid genesis state",
+			desc: "valid genesis state",
 			genState: &types.GenesisState{
 
+				AuctionList: []types.Auction{
+					{
+						Id: 0,
+					},
+					{
+						Id: 1,
+					},
+				},
+				AuctionCount: 2,
+				BidList: []types.Bid{
+					{
+						Id: 0,
+					},
+					{
+						Id: 1,
+					},
+				},
+				BidCount: 2,
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,
+		},
+		{
+			desc: "duplicated auction",
+			genState: &types.GenesisState{
+				AuctionList: []types.Auction{
+					{
+						Id: 0,
+					},
+					{
+						Id: 0,
+					},
+				},
+			},
+			valid: false,
+		},
+		{
+			desc: "invalid auction count",
+			genState: &types.GenesisState{
+				AuctionList: []types.Auction{
+					{
+						Id: 1,
+					},
+				},
+				AuctionCount: 0,
+			},
+			valid: false,
+		},
+		{
+			desc: "duplicated bid",
+			genState: &types.GenesisState{
+				BidList: []types.Bid{
+					{
+						Id: 0,
+					},
+					{
+						Id: 0,
+					},
+				},
+			},
+			valid: false,
+		},
+		{
+			desc: "invalid bid count",
+			genState: &types.GenesisState{
+				BidList: []types.Bid{
+					{
+						Id: 1,
+					},
+				},
+				BidCount: 0,
+			},
+			valid: false,
 		},
 		// this line is used by starport scaffolding # types/genesis/testcase
 	}

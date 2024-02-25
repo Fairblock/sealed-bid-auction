@@ -17,3 +17,13 @@ const (
 func KeyPrefix(p string) []byte {
 	return []byte(p)
 }
+
+const (
+	AuctionKey      = "Auction/value/"
+	AuctionCountKey = "Auction/count/"
+)
+
+const (
+	BidKey      = "Bid/value/"
+	BidCountKey = "Bid/count/"
+)

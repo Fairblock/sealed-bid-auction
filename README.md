@@ -225,3 +225,22 @@ replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alp
 
 4. Run `go mod tidy`
 
+### 3. Scaffold the types and messages for the auction chain
+
+1. Create aution type & messages
+   
+```bash
+ignite scaffold list auction name startPrice:coin duration:uint createdAt:uint currentHighestBidId:uint highestBidExists:bool ended:bool --module auction --no-simulation
+```
+
+1. Create bid types & message for user to place bid
+
+```bash
+ignite scaffold list bid auctionId:uint bidPrice:coin --module auction --no-simulation
+```
+
+3. Create finalize-auction message for auction creator to end the auction
+
+```bash
+ignite scaffold message finalize-auction auctionId:uint --module auction
+```

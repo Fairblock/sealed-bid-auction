@@ -1,0 +1,18 @@
+syntax = "proto3";
+package auction.auction;
+
+option go_package = "auction/x/auction/types";
+import "gogoproto/gogo.proto"; 
+import "cosmos/base/v1beta1/coin.proto"; 
+
+message Auction {
+  uint64 id = 1;
+  string name = 2; 
+  cosmos.base.v1beta1.Coin startPrice = 3 [(gogoproto.nullable) = false]; 
+  uint64 duration = 4; 
+  uint64 createdAt = 5; 
+  uint64 currentHighestBidId = 6; 
+  bool highestBidExists = 7; 
+  bool ended = 8; 
+  string creator = 9;
+}
