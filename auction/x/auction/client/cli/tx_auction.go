@@ -12,9 +12,9 @@ import (
 
 func CmdCreateAuction() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-auction [name] [start-price] [duration] [created-at] [current-highest-bid-id] [highest-bid-exists] [ended]",
+		Use:   "create-auction [name] [start-price] [duration]",
 		Short: "Create a new auction",
-		Args:  cobra.ExactArgs(7),
+		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argName := args[0]
 			argStartPrice, err := sdk.ParseCoinNormalized(args[1])
@@ -25,29 +25,13 @@ func CmdCreateAuction() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			argCreatedAt, err := cast.ToUint64E(args[3])
-			if err != nil {
-				return err
-			}
-			argCurrentHighestBidId, err := cast.ToUint64E(args[4])
-			if err != nil {
-				return err
-			}
-			argHighestBidExists, err := cast.ToBoolE(args[5])
-			if err != nil {
-				return err
-			}
-			argEnded, err := cast.ToBoolE(args[6])
-			if err != nil {
-				return err
-			}
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgCreateAuction(clientCtx.GetFromAddress().String(), argName, argStartPrice, argDuration, argCreatedAt, argCurrentHighestBidId, argHighestBidExists, argEnded)
+			msg := types.NewMsgCreateAuction(clientCtx.GetFromAddress().String(), argName, argStartPrice, argDuration)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}

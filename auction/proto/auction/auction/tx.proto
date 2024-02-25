@@ -20,10 +20,6 @@ message MsgCreateAuction {
   string                   name                = 2;
   cosmos.base.v1beta1.Coin startPrice          = 3 [(gogoproto.nullable) = false];
   uint64                   duration            = 4;
-  uint64                   createdAt           = 5;
-  uint64                   currentHighestBidId = 6;
-  bool                     highestBidExists    = 7;
-  bool                     ended               = 8;
 }
 
 message MsgCreateAuctionResponse {

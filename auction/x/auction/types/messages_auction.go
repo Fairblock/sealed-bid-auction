@@ -13,16 +13,12 @@ const (
 
 var _ sdk.Msg = &MsgCreateAuction{}
 
-func NewMsgCreateAuction(creator string, name string, startPrice sdk.Coin, duration uint64, createdAt uint64, currentHighestBidId uint64, highestBidExists bool, ended bool) *MsgCreateAuction {
+func NewMsgCreateAuction(creator string, name string, startPrice sdk.Coin, duration uint64) *MsgCreateAuction {
 	return &MsgCreateAuction{
-		Creator:             creator,
-		Name:                name,
-		StartPrice:          startPrice,
-		Duration:            duration,
-		CreatedAt:           createdAt,
-		CurrentHighestBidId: currentHighestBidId,
-		HighestBidExists:    highestBidExists,
-		Ended:               ended,
+		Creator:    creator,
+		Name:       name,
+		StartPrice: startPrice,
+		Duration:   duration,
 	}
 }
 
