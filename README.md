@@ -275,7 +275,7 @@ var (
     AuctionEnded            = sdkerrors.Register(ModuleName, 1100, "target auction already ended")
     AuctionNotFound         = sdkerrors.Register(ModuleName, 1200, "target auction not found")
     AuctionPriceInvalid     = sdkerrors.Register(ModuleName, 1300, "auction start price must larger than 0")
-    AuctionDurationInvalid  = sdkerrors.Register(ModuleName, 1400, "auction duration must be at least 10")
+    AuctionDurationInvalid  = sdkerrors.Register(ModuleName, 1400, "auction duration must be at least 5")
     AuctionDurationPassed   = sdkerrors.Register(ModuleName, 1500, "auction duration passed, not accepting new bid")
     AuctionFinalizeTooEarly = sdkerrors.Register(ModuleName, 1600, "please wait until auction duration passed to finalize the result")
     
@@ -302,7 +302,7 @@ func (k msgServer) CreateAuction(goCtx context.Context, msg *types.MsgCreateAuct
 		return nil, types.AuctionPriceInvalid
 	}
 
-	if msg.Duration < 10 {
+	if msg.Duration < 5 {
 		return nil, types.AuctionDurationInvalid
 	}
 
