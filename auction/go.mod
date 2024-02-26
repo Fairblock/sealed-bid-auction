@@ -5,7 +5,7 @@ go 1.21
 require (
 	cosmossdk.io/api v0.3.1
 	cosmossdk.io/math v1.0.1
-	github.com/Fairblock/fairyring v0.3.2
+	github.com/Fairblock/fairyring v0.3.3-0.20240226163331-026e6f0cbeca
 	github.com/cometbft/cometbft v0.37.2
 	github.com/cometbft/cometbft-db v0.8.0
 	github.com/cosmos/cosmos-sdk v0.47.3
@@ -180,5 +180,3 @@ require (
 replace github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
-
-replace github.com/Fairblock/fairyring => ../../fairyring
