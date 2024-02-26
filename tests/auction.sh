@@ -109,6 +109,8 @@ if [ "$EVENT_TYPE" != "new-encrypted-tx-submitted" ] && [ "$TARGET_HEIGHT" != "$
   exit 1
 fi
 
+echo "Encrypted TXs: $($BINARY query pep list-encrypted-tx --node $CHAIN2_NODE -o json | jq '.encryptedTxArray')"
+
 echo "Bids after submitting the encrypted bid: $($BINARY q auction list-bid --node $CHAIN2_NODE -o json | jq '.Bid')"
 RESULT=$($BINARY query bank balances $WALLET_4 --node $CHAIN2_NODE -o json)
 TARGET_BAL_DENOM=$(echo "$RESULT" | jq -r '.balances[1].denom')
@@ -125,11 +127,14 @@ if [ "$RESULT" != "1001" ]; then
   echo "ERROR: bid not found"
   exit 1
 fi
+
 echo "Found bid with price: $RESULT"
 RESULT=$($BINARY query bank balances $WALLET_4 --node $CHAIN2_NODE -o json)
 TARGET_BAL_DENOM=$(echo "$RESULT" | jq -r '.balances[1].denom')
 TARGET_BAL=$(echo "$RESULT" | jq -r '.balances[1].amount')
 echo "Bidder balance: $TARGET_BAL $TARGET_BAL_DENOM"
+
+echo "Encrypted TXs After Execution: $($BINARY query pep list-encrypted-tx --node $CHAIN2_NODE -o json | jq '.encryptedTxArray')"
 
 echo "Wait for the auction to end..."
 
