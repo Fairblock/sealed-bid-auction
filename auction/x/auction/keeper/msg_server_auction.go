@@ -13,7 +13,7 @@ func (k msgServer) CreateAuction(goCtx context.Context, msg *types.MsgCreateAuct
 		return nil, types.AuctionPriceInvalid
 	}
 
-	if msg.Duration < 10 {
+	if msg.Duration < 5 {
 		return nil, types.AuctionDurationInvalid
 	}
 
