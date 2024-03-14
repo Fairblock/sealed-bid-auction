@@ -5,7 +5,6 @@ go 1.21
 require (
 	cosmossdk.io/api v0.3.1
 	cosmossdk.io/math v1.0.1
-	github.com/Fairblock/fairyring v0.3.3-0.20240226163331-026e6f0cbeca
 	github.com/cometbft/cometbft v0.37.2
 	github.com/cometbft/cometbft-db v0.8.0
 	github.com/cosmos/cosmos-sdk v0.47.3
