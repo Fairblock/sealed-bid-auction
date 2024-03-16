@@ -1,6 +1,6 @@
 # Seal Bid Auction Demo
 
-This document provide step by steps guide on creating a seal bid auction chain with fairyring pep module.
+This document provide step by steps guide on creating a seal bid auction chain with `fairyring` pep module.
 
 ## Install dependencies
 
