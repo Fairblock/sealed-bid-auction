@@ -115,6 +115,11 @@ import (
 	auctionmodulekeeper "auction/x/auction/keeper"
 	auctionmoduletypes "auction/x/auction/types"
 
+	// pep modules
+	pepmodule "github.com/Fairblock/fairyring/x/pep"
+	pepmodulekeeper "github.com/Fairblock/fairyring/x/pep/keeper"
+	pepmoduletypes "github.com/Fairblock/fairyring/x/pep/types"
+
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 
 	appparams "auction/app/params"
@@ -175,6 +180,7 @@ var (
 		vesting.AppModuleBasic{},
 		consensus.AppModuleBasic{},
 		auctionmodule.AppModuleBasic{},
+		pepmodule.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 	)
 
@@ -189,6 +195,8 @@ var (
 		govtypes.ModuleName:            {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		auctionmoduletypes.ModuleName:  {authtypes.Minter, authtypes.Burner, authtypes.Staking},
+		// pep module account permissions
+		pepmoduletypes.ModuleName: {authtypes.Minter, authtypes.Burner, authtypes.Staking},
 		// this line is used by starport scaffolding # stargate/app/maccPerms
 	}
 )
@@ -252,6 +260,10 @@ type App struct {
 	ScopedICAHostKeeper  capabilitykeeper.ScopedKeeper
 
 	AuctionKeeper auctionmodulekeeper.Keeper
+
+	// pep module keepers
+	ScopedPepKeeper capabilitykeeper.ScopedKeeper
+	PepKeeper       pepmodulekeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
 	// mm is the module manager
@@ -299,6 +311,8 @@ func New(
 		feegrant.StoreKey, evidencetypes.StoreKey, ibctransfertypes.StoreKey, icahosttypes.StoreKey,
 		capabilitytypes.StoreKey, group.StoreKey, icacontrollertypes.StoreKey, consensusparamtypes.StoreKey,
 		auctionmoduletypes.StoreKey,
+		// pep module kv store keys
+		pepmoduletypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -530,6 +544,31 @@ func New(
 	)
 	auctionModule := auctionmodule.NewAppModule(appCodec, app.AuctionKeeper, app.AccountKeeper, app.BankKeeper)
 
+	// configure pep keepers and module
+	scopedPepKeeper := app.CapabilityKeeper.ScopeToModule(pepmoduletypes.ModuleName)
+	app.PepKeeper = *pepmodulekeeper.NewKeeper(
+		appCodec,
+		keys[pepmoduletypes.StoreKey],
+		keys[pepmoduletypes.MemStoreKey],
+		app.GetSubspace(pepmoduletypes.ModuleName),
+		app.IBCKeeper.ChannelKeeper,
+		&app.IBCKeeper.PortKeeper,
+		scopedPepKeeper,
+		app.IBCKeeper.ConnectionKeeper,
+		app.BankKeeper,
+	)
+	pepModule := pepmodule.NewAppModule(
+		appCodec,
+		app.PepKeeper,
+		app.AccountKeeper,
+		app.BankKeeper,
+		app.MsgServiceRouter(),
+		encodingConfig.TxConfig,
+		app.SimCheck,
+	)
+
+	pepIBCModule := pepmodule.NewIBCModule(app.PepKeeper)
+
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
 	/**** IBC Routing ****/
@@ -540,7 +579,8 @@ func New(
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := ibcporttypes.NewRouter()
 	ibcRouter.AddRoute(icahosttypes.SubModuleName, icaHostIBCModule).
-		AddRoute(ibctransfertypes.ModuleName, transferIBCModule)
+		AddRoute(ibctransfertypes.ModuleName, transferIBCModule).
+		AddRoute(pepmoduletypes.ModuleName, pepIBCModule) // pep IBC route
 	// this line is used by starport scaffolding # ibc/app/router
 	app.IBCKeeper.SetRouter(ibcRouter)
 
@@ -592,6 +632,7 @@ func New(
 		transferModule,
 		icaModule,
 		auctionModule,
+		pepModule, // add pep module to module manager
 		// this line is used by starport scaffolding # stargate/app/appModule
 
 		crisis.NewAppModule(app.CrisisKeeper, skipGenesisInvariants, app.GetSubspace(crisistypes.ModuleName)), // always be last to make sure that it checks for all invariants and not only part of them
@@ -625,6 +666,7 @@ func New(
 		vestingtypes.ModuleName,
 		consensusparamtypes.ModuleName,
 		auctionmoduletypes.ModuleName,
+		pepmoduletypes.ModuleName, // pep module begin blocker
 		// this line is used by starport scaffolding # stargate/app/beginBlockers
 	)
 
@@ -651,6 +693,7 @@ func New(
 		vestingtypes.ModuleName,
 		consensusparamtypes.ModuleName,
 		auctionmoduletypes.ModuleName,
+		pepmoduletypes.ModuleName, // pep module end blocker
 		// this line is used by starport scaffolding # stargate/app/endBlockers
 	)
 
@@ -740,6 +783,7 @@ func New(
 
 	app.ScopedIBCKeeper = scopedIBCKeeper
 	app.ScopedTransferKeeper = scopedTransferKeeper
+	app.ScopedPepKeeper = scopedPepKeeper
 	// this line is used by starport scaffolding # stargate/app/beforeInitReturn
 
 	return app
@@ -907,6 +951,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(icacontrollertypes.SubModuleName)
 	paramsKeeper.Subspace(icahosttypes.SubModuleName)
 	paramsKeeper.Subspace(auctionmoduletypes.ModuleName)
+	paramsKeeper.Subspace(pepmoduletypes.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 
 	return paramsKeeper

@@ -21,6 +21,7 @@ require (
 	google.golang.org/genproto/googleapis/api v0.0.0-20230822172742-b8732ec3820d
 	google.golang.org/grpc v1.58.3
 	gopkg.in/yaml.v2 v2.4.0
+	github.com/Fairblock/fairyring v0.3.3-0.20240226163331-026e6f0cbeca
 )
 
 require (
