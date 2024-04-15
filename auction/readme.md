@@ -1,13 +1,16 @@
 # auction
 **auction** is a blockchain built using Cosmos SDK and Tendermint and created with [Ignite CLI](https://ignite.com/cli).
 
+## Rollkit version
+
+[v0.10.5](https://github.com/rollkit/docs/tree/0db9e82f3eb943024bed34f999f99609f66c5b22)
+
 ## Get started
 
 ```
-ignite chain serve
+make install
+./init-local.sh
 ```
-
-`serve` command installs dependencies, builds, initializes, and starts your blockchain in development.
 
 ### Configure
 
