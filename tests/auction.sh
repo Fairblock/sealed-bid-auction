@@ -15,7 +15,7 @@ CHAIN_DIR=$(pwd)/data
 CHAINID_1=fairyring_test_1
 CHAIN1_NODE=tcp://localhost:16657
 CHAINID_2=auction_test_1
-CHAIN2_NODE=tcp://localhost:26657
+CHAIN2_NODE=tcp://localhost:36657
 BLOCK_TIME=5
 
 WALLET_4=$($BINARY keys show wallet4 -a --keyring-backend test --home $CHAIN_DIR/$CHAINID_2)
@@ -63,7 +63,7 @@ echo "Pub Key expires at: $PUB_KEY_EXPIRY"
 
 
 echo "Creating auction with starting price 1000token for 5 blocks"
-RESULT=$($BINARY tx auction create-auction "Testing Auction 0" 1000token 5 --from $VALIDATOR_2 --home $CHAIN_DIR/$CHAINID_2 --chain-id $CHAINID_2 --node $CHAIN2_NODE --keyring-backend test -o json -y)
+RESULT=$($BINARY tx auction create-auction "Testing Auction 0" 1000token 30 --from $VALIDATOR_2 --home $CHAIN_DIR/$CHAINID_2 --chain-id $CHAINID_2 --node $CHAIN2_NODE --keyring-backend test -o json -y)
 check_tx_code $RESULT
 RESULT=$(wait_for_tx $RESULT)
 CODE=$(echo $RESULT | jq -r '.code')
@@ -119,7 +119,7 @@ echo "Bidder balance: $TARGET_BAL $TARGET_BAL_DENOM"
 
 echo "Wait for the encrypted vote to be executed..."
 
-sleep $(($BLOCK_TIME * 3))
+sleep $(($BLOCK_TIME * 6))
 
 RESULT=$($BINARY q auction list-bid --node $CHAIN2_NODE -o json | jq -r '.Bid[0].bidPrice.amount')
 if [ "$RESULT" != "1001" ]; then
@@ -138,7 +138,7 @@ echo "Encrypted TXs After Execution: $($BINARY query pep list-encrypted-tx --nod
 
 echo "Wait for the auction to end..."
 
-sleep $(($BLOCK_TIME * 3))
+sleep $(($BLOCK_TIME * 2))
 
 echo "Finalizing Auction:"
 RESULT=$($BINARY tx auction finalize-auction 0 --from $VALIDATOR_2 --home $CHAIN_DIR/$CHAINID_2 --chain-id $CHAINID_2 --node $CHAIN2_NODE --keyring-backend test -o json -y)

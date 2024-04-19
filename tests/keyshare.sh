@@ -12,7 +12,7 @@ GENERATOR=ShareGenerator
 BINARY=fairyringd
 CHAIN_DIR=$(pwd)/data
 CHAINID_1=fairyring_test_1
-BLOCK_TIME=5
+BLOCK_TIME=6
 
 WALLET_1=$($BINARY keys show wallet1 -a --keyring-backend test --home $CHAIN_DIR/$CHAINID_1)
 VALIDATOR_1=$($BINARY keys show val1 -a --keyring-backend test --home $CHAIN_DIR/$CHAINID_1)
@@ -49,7 +49,7 @@ PUB_KEY=$(echo "$GENERATED_RESULT" | jq -r '.MasterPublicKey')
 COMMITS=$(echo "$GENERATED_RESULT" | jq -r '.Commitments[0]')
 
 echo "Trusted address submit pub key on chain $CHAINID_1"
-RESULT=$($BINARY tx keyshare create-latest-pub-key $PUB_KEY $COMMITS --from $VALIDATOR_1 --gas-prices 1ufairy --home $CHAIN_DIR/$CHAINID_1 --chain-id $CHAINID_1 --node tcp://localhost:16657 --broadcast-mode sync --keyring-backend test -o json -y)
+RESULT=$($BINARY tx keyshare create-latest-pub-key $PUB_KEY $COMMITS 1 '[{"data":"'"$GENERATED_SHARE"'","validator":"'"$VALIDATOR_1"'"}]' --from $VALIDATOR_1 --gas-prices 1ufairy --home $CHAIN_DIR/$CHAINID_1 --chain-id $CHAINID_1 --node tcp://localhost:16657 --broadcast-mode sync --keyring-backend test -o json -y)
 check_tx_code $RESULT
 RESULT=$(wait_for_tx $RESULT)
 VALIDATOR_ADDR=$(echo "$RESULT" | jq -r '.logs[0].events[1].attributes[2].value')

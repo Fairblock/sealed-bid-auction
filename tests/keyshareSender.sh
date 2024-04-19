@@ -25,6 +25,15 @@ wait_for_tx () {
   echo "$RESULT"
 }
 
+
+wait_for_tx_2 () {
+  sleep $BLOCK_TIME
+  local TXHASH=$(echo "$1" | jq -r '.txhash')
+  RESULT=$($BINARY q tx --type=hash $TXHASH --home /Users/beast/Work-FairBlock/seal-bid-auction-demo/tests/data/auction_test_1/ --chain-id auction_test_1 --node http://localhost:36657 -o json)
+  echo "$RESULT"
+}
+
+
 while true
 do
   CURRENT_BLOCK=$($BINARY query block --home $HOME --node $NODE | jq -r '.block.header.height')
@@ -40,4 +49,11 @@ do
     echo "ERROR MESSAGE: $(echo "$RESULT" | jq -r '.raw_log')"
   fi
   echo "Submitted KeyShare for height: $TARGET_HEIGHT"
+  echo $EXTRACTED_SHARE
+  PUBKEY=$($BINARY q keyshare show-active-pub-key --home $HOME --node $NODE -o json | jq -r '.activePubKey.publicKey')
+  echo "PUBKEY: $PUBKEY"
+  RESULT=$(auctiond tx pep create-aggregated-key-share $TARGET_HEIGHT $EXTRACTED_SHARE $PUBKEY --from rly2 --home /Users/beast/Work-FairBlock/seal-bid-auction-demo/tests/data/auction_test_1/ --chain-id auction_test_1 --node http://localhost:36657 --broadcast-mode sync --keyring-backend test -o json -y)
+  check_tx_code $RESULT
+  RESULT=$(wait_for_tx_2 $RESULT)
+  echo $RESULT
 done

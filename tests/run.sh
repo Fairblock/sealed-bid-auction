@@ -2,14 +2,14 @@
 
 ./start.sh
 
-./relayer.sh
+#./relayer.sh
 
-./fairyport.sh
+#./fairyport.sh
 
 ./keyshare.sh
 
 sleep 15
 
 ./auction.sh
-
+#
 ./stop.sh

@@ -18,19 +18,23 @@ RLY_MNEMONIC_1="alley afraid soup fall idea toss can goose become valve initial 
 RLY_MNEMONIC_2="record gift you once hip style during joke field prize dust unique length more pencil transfer quit train device arrive energy sort steak upset"
 
 P2PPORT_1=16656
-P2PPORT_2=26656
+P2PPORT_2=36656
 RPCPORT_1=16657
-RPCPORT_2=26657
+RPCPORT_2=36657
 RESTPORT_1=1316
-RESTPORT_2=1317
-ROSETTA_1=8080
-ROSETTA_2=8081
-GRPCPORT_1=9090
-GRPCPORT_2=9092
-GRPCWEB_1=9091
-GRPCWEB_2=9093
+RESTPORT_2=1307
+ROSETTA_1=8077
+ROSETTA_2=8071
+GRPCPORT_1=9088
+GRPCPORT_2=9082
+GRPCWEB_1=9089
+GRPCWEB_2=9083
 
 BLOCK_TIME=5
+
+DA_BLOCK_HEIGHT=$(curl http://0.0.0.0:26657/block | jq -r '.result.block.header.height')
+AUTH_TOKEN=$(docker exec $(docker ps -q)  celestia bridge --node.store /home/celestia/bridge/ auth admin)
+NAMESPACE_ID=$(openssl rand -hex 10)
 
 # Stop if it is already running
 if pgrep -x "$FAIRYRING_BINARY" >/dev/null; then
@@ -127,6 +131,7 @@ sed -i -e 's/swagger = false/swagger = true/g' $CHAIN_DIR/$CHAINID_1/config/app.
 sed -i -e 's#"tcp://localhost:1317"#"tcp://localhost:'"$RESTPORT_1"'"#g' $CHAIN_DIR/$CHAINID_1/config/app.toml
 sed -i -e 's#":8080"#":'"$ROSETTA_1"'"#g' $CHAIN_DIR/$CHAINID_1/config/app.toml
 sed -i -e 's/minimum-gas-prices = "0stake"/minimum-gas-prices = "1ufairy"/g' $CHAIN_DIR/$CHAINID_1/config/app.toml
+sed -i -e 's/localhost:9090/0.0.0.0:'"$GRPCPORT_1"'/g' $CHAIN_DIR/$CHAINID_1/config/app.toml
 
 sed -i -e 's#"tcp://0.0.0.0:26656"#"tcp://0.0.0.0:'"$P2PPORT_2"'"#g' $CHAIN_DIR/$CHAINID_2/config/config.toml
 sed -i -e 's#"tcp://127.0.0.1:26657"#"tcp://0.0.0.0:'"$RPCPORT_2"'"#g' $CHAIN_DIR/$CHAINID_2/config/config.toml
@@ -134,7 +139,7 @@ sed -i -e 's/timeout_commit = "5s"/timeout_commit = "5s"/g' $CHAIN_DIR/$CHAINID_
 sed -i -e 's/timeout_propose = "3s"/timeout_propose = "5s"/g' $CHAIN_DIR/$CHAINID_2/config/config.toml
 sed -i -e 's/index_all_keys = false/index_all_keys = true/g' $CHAIN_DIR/$CHAINID_2/config/config.toml
 sed -i -e 's/enable = false/enable = true/g' $CHAIN_DIR/$CHAINID_2/config/app.toml
-sed -i -e 's/0.0.0.0:9090/0.0.0.0:'"$GRPCPORT_2"'/g' $CHAIN_DIR/$CHAINID_2/config/app.toml
+sed -i -e 's/localhost:9090/0.0.0.0:'"$GRPCPORT_2"'/g' $CHAIN_DIR/$CHAINID_2/config/app.toml
 sed -i -e 's/swagger = false/swagger = true/g' $CHAIN_DIR/$CHAINID_2/config/app.toml
 sed -i -e 's#"tcp://localhost:1317"#"tcp://localhost:'"$RESTPORT_2"'"#g' $CHAIN_DIR/$CHAINID_2/config/app.toml
 sed -i -e 's#":8080"#":'"$ROSETTA_2"'"#g' $CHAIN_DIR/$CHAINID_2/config/app.toml
@@ -146,7 +151,7 @@ sed -i -e 's/"reward_delay_time": "604800s"/"reward_delay_time": "0s"/g' $CHAIN_
 sed -i -e 's/"reward_delay_time": "604800s"/"reward_delay_time": "0s"/g' $CHAIN_DIR/$CHAINID_2/config/genesis.json
 
 sed -i -e 's/"trusted_addresses": \[\]/"trusted_addresses": \["'"$VAL1_ADDR"'"\]/g' $CHAIN_DIR/$CHAINID_1/config/genesis.json
-sed -i -e 's/"trusted_addresses": \[\]/"trusted_addresses": \["'"$VAL2_ADDR"'","'"$WALLET2_ADDR"'"\]/g' $CHAIN_DIR/$CHAINID_2/config/genesis.json
+sed -i -e 's/"trusted_addresses": \[\]/"trusted_addresses": \["'"$VAL2_ADDR"'","'"$WALLET2_ADDR"'","'"$RLY2_ADDR"'"\]/g' $CHAIN_DIR/$CHAINID_2/config/genesis.json
 
 TRUSTED_PARTIES='{"client_id": "07-tendermint-0", "connection_id": "connection-0", "channel_id": "channel-0"}'
 
@@ -158,35 +163,42 @@ sed -i -e 's/"key_expiry": "100"/"key_expiry": "10000"/g' $CHAIN_DIR/$CHAINID_1/
 NEW_GENESIS=$(cat $CHAIN_DIR/$CHAINID_2/config/genesis.json | jq '.app_state.pep.params.minGasPrice.amount = "1" | .app_state.pep.params.minGasPrice.denom = "token"')
 echo "$NEW_GENESIS" | jq > "$CHAIN_DIR/$CHAINID_2/config/genesis.json"
 
+
+ADDRESS=$(jq -r '.address' ~/.auction/config/priv_validator_key.json)
+PUB_KEY=$(jq -r '.pub_key' ~/.auction/config/priv_validator_key.json)
+jq --argjson pubKey "$PUB_KEY" '.consensus["validators"]=[{"address": "'$ADDRESS'", "pub_key": $pubKey, "power": "1000", "name": "Rollkit Sequencer"}]' ~/.auction/config/genesis.json > temp.json && mv temp.json ~/.auction/config/genesis.json
+
+
+
 echo "Starting $CHAINID_1 in $CHAIN_DIR..."
 echo "Creating log file at $CHAIN_DIR/$CHAINID_1.log"
 $FAIRYRING_BINARY start --log_level trace --log_format json --home $CHAIN_DIR/$CHAINID_1 --pruning=nothing --grpc.address="0.0.0.0:$GRPCPORT_1" --grpc-web.address="0.0.0.0:$GRPCWEB_1" > $CHAIN_DIR/$CHAINID_1.log 2>&1 &
 
 echo "Starting $CHAINID_2 in $CHAIN_DIR..."
 echo "Creating log file at $CHAIN_DIR/$CHAINID_2.log"
-$AUCTION_BINARY start --log_level trace --log_format json --home $CHAIN_DIR/$CHAINID_2 --pruning=nothing --grpc.address="0.0.0.0:$GRPCPORT_2" --grpc-web.address="0.0.0.0:$GRPCWEB_2" > $CHAIN_DIR/$CHAINID_2.log 2>&1 &
-
-echo "Checking if there is an existing keys for Hermes Relayer..."
-HKEY_1=$(hermes --config hermes_config.toml keys list --chain $CHAINID_1 | sed -n '/SUCCESS/d; s/.*(\([^)]*\)).*/\1/p')
-if [ "$HKEY_1" == "" ]; then
-  echo "Key not found for chain id: $CHAINID_1 in Hermes Relayer Keys..."
-  echo "Creating key..."
-  hermes --config hermes_config.toml keys add --chain $CHAINID_1 --key-file rly1.json
-fi
-
-HKEY_2=$(hermes --config hermes_config.toml keys list --chain $CHAINID_2 | sed -n '/SUCCESS/d; s/.*(\([^)]*\)).*/\1/p')
-if [ "$HKEY_2" == "" ]; then
-  echo "Key not found for chain id: $CHAINID_2 in Hermes Relayer Keys..."
-  echo "Creating key..."
-  hermes --config hermes_config.toml keys add --chain $CHAINID_2 --key-file rly2.json
-fi
+$AUCTION_BINARY start --log_level trace --log_format json --home $CHAIN_DIR/$CHAINID_2 --pruning=nothing --rpc.laddr "tcp://127.0.0.1:$RPCPORT_2" --p2p.laddr "0.0.0.0:$P2PPORT_2" --grpc.address="0.0.0.0:$GRPCPORT_2" --grpc-web.address="0.0.0.0:$GRPCWEB_2" --rollkit.aggregator true --rollkit.da_layer celestia --rollkit.da_config='{"base_url":"http://localhost:26658","timeout":60000000000,"fee":600000,"gas_limit":6000000,"auth_token":"'$AUTH_TOKEN'"}' --rollkit.namespace_id $NAMESPACE_ID --rollkit.da_start_height $DA_BLOCK_HEIGHT > $CHAIN_DIR/$CHAINID_2.log 2>&1 &
+#
+#echo "Checking if there is an existing keys for Hermes Relayer..."
+#HKEY_1=$(hermes --config hermes_config.toml keys list --chain $CHAINID_1 | sed -n '/SUCCESS/d; s/.*(\([^)]*\)).*/\1/p')
+#if [ "$HKEY_1" == "" ]; then
+#  echo "Key not found for chain id: $CHAINID_1 in Hermes Relayer Keys..."
+#  echo "Creating key..."
+#  hermes --config hermes_config.toml keys add --chain $CHAINID_1 --key-file rly1.json
+#fi
+#
+#HKEY_2=$(hermes --config hermes_config.toml keys list --chain $CHAINID_2 | sed -n '/SUCCESS/d; s/.*(\([^)]*\)).*/\1/p')
+#if [ "$HKEY_2" == "" ]; then
+#  echo "Key not found for chain id: $CHAINID_2 in Hermes Relayer Keys..."
+#  echo "Creating key..."
+#  hermes --config hermes_config.toml keys add --chain $CHAINID_2 --key-file rly2.json
+#fi
 
 rm rly1.json &> /dev/null
 rm rly2.json &> /dev/null
 
 echo "Waiting both chain to run..."
 sleep $((BLOCK_TIME*2))
-
-echo "Starting Hermes Relayer..."
-echo "Creating log file at $CHAIN_DIR/relayer.log"
-hermes --config hermes_config.toml start > $CHAIN_DIR/relayer.log 2>&1 &
+#
+#echo "Starting Hermes Relayer..."
+#echo "Creating log file at $CHAIN_DIR/relayer.log"
+#hermes --config hermes_config.toml start > $CHAIN_DIR/relayer.log 2>&1 &
